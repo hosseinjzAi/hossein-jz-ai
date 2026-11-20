@@ -1,62 +1,32 @@
-import "dotenv/config";
-import express from "express";
-import rateLimit from "express-rate-limit";
-import multer from "multer";
-import { generateResponse } from "./services/aiService.js";
-import { validateImage, toBase64 } from "./services/imageService.js";
+import OpenAI from "openai";
 
-const app = express();
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+export async function generateResponse({ history, message, imageBase64, imageMimeType }) {
+  const client = new OpenAI({
+    apiKey: "1xai-6RbRhJ_Dj1m68w-smhRJ5y28-tN4Hdgq6In0D_XI_8",
+    baseURL: "https://1xai.ir/v1",
+  });
 
-app.use(express.json({ limit: "10mb" }));
-app.use(express.static("public"));
+  const messages = history.map((msg) => ({
+    role: msg.role,
+    content: msg.content,
+  }));
 
-const limiter = rateLimit({ windowMs: 60 * 1000, max: 30 });
-app.use("/api/", limiter);
-
-const conversations = new Map();
-
-app.post("/api/chat", upload.single("image"), async (req, res) => {
-  try {
-    const { message, conversationId } = req.body;
-    if (!message || message.trim().length === 0) {
-      return res.status(400).json({ error: "Message is required." });
-    }
-
-    let imageBase64 = null;
-    let imageMimeType = null;
-
-    if (req.file) {
-      validateImage(req.file);
-      imageBase64 = toBase64(req.file.buffer);
-      imageMimeType = req.file.mimetype;
-    }
-
-    const history = conversations.get(conversationId) || [];
-
-    const reply = await generateResponse({
-      history,
-      message: message.trim(),
-      imageBase64,
-      imageMimeType,
+  const userContent = [{ type: "text", text: message }];
+  
+  if (imageBase64 && imageMimeType) {
+    userContent.push({
+      type: "image_url",
+      image_url: { url: `data:${imageMimeType};base64,${imageBase64}` },
     });
-
-    history.push({ role: "user", content: message.trim() });
-    history.push({ role: "assistant", content: reply });
-    conversations.set(conversationId, history.slice(-20));
-
-    res.json({ reply, conversationId });
-  } catch (err) {
-    console.error("Chat error:", err.message);
-    res.status(500).json({ error: err.message || "AI request failed." });
   }
-});
 
-app.post("/api/clear", (req, res) => {
-  const { conversationId } = req.body;
-  conversations.delete(conversationId);
-  res.json({ ok: true });
-});
+  messages.push({ role: "user", content: userContent });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`HOSSEIN JZ AI running on port ${PORT}`));
+  const response = await client.chat.completions.create({
+    model: "gpt-5-mini",
+    messages: messages,
+    max_tokens: 2000,
+  });
+
+  return response.choices[0].message.content;
+}
