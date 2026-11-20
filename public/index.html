@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HOSSEIN JZ AI</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <button id="newChat">+ New Chat</button>
+    <button id="themeToggle">🌓 Theme</button>
+    <div id="historyList" class="history"></div>
+  </aside>
+
+  <main class="chat-container">
+    <div id="messages" class="messages"></div>
+
+    <div class="input-area">
+      <label for="imageInput" class="icon-btn" title="Upload image">📷</label>
+      <input type="file" id="imageInput" accept="image/*" hidden>
+      <span id="imagePreview" class="preview"></span>
+
+      <button id="micBtn" class="icon-btn" title="Voice input">🎤</button>
+      <input type="text" id="userInput" placeholder="Ask anything..." autocomplete="off">
+      <button id="sendBtn">Send</button>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
