@@ -23,7 +23,7 @@ export async function generateResponse({ history, message, imageBase64, imageMim
   messages.push({ role: "user", content: userContent });
 
   const response = await client.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5-mini",
     messages: messages,
     max_tokens: 2000,
   });
