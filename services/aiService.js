@@ -1,9 +1,8 @@
 import OpenAI from "openai";
 
 export async function generateResponse({ history, message, imageBase64, imageMimeType }) {
-  // ساخت کلاینت در داخل تابع، تا مطمئن شویم متغیر محیطی بارگذاری شده است
   const client = new OpenAI({
-    apiKey: process.env.ONEXAI_API_KEY,
+    apiKey: "1xai-6RbRhJ_Dj1m68w-smhRJ5y28-tN4Hdgq6In0D_XI_8",
     baseURL: "https://1xai.ir/v1",
   });
 
@@ -24,7 +23,7 @@ export async function generateResponse({ history, message, imageBase64, imageMim
   messages.push({ role: "user", content: userContent });
 
   const response = await client.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5-mini",
     messages: messages,
     max_tokens: 2000,
   });
