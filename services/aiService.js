@@ -1,11 +1,12 @@
 import OpenAI from "openai";
 
-const client = new OpenAI({
-  apiKey: process.env.ONEXAI_API_KEY,
-  baseURL: "https://1xai.ir/v1",
-});
-
 export async function generateResponse({ history, message, imageBase64, imageMimeType }) {
+  // ساخت کلاینت در داخل تابع، بعد از بارگذاری متغیرهای محیطی
+  const client = new OpenAI({
+    apiKey: process.env.ONEXAI_API_KEY,
+    baseURL: "https://1xai.ir/v1",
+  });
+
   const messages = history.map((msg) => ({
     role: msg.role,
     content: msg.content,
