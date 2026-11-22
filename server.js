@@ -13,7 +13,11 @@ const limiter = rateLimit({ windowMs: 60 * 1000, max: 30 });
 app.use("/api/", limiter);
 
 const conversations = new Map();
-const API_KEY = "1xai-6RbRhJ_Dj1m68w-smhRJ5y28-tN4Hdgq6In0D_XI_8"; // کلید مستقیم
+
+// کلید جدیدت
+const API_KEY = "1xai-dPUL-JjHJ7TaumxUsM7p1QhnoCZDbTvL1jCkeCPCvs";
+const BASE_URL = "https://1xai.ir/v1";
+const MODEL = "gpt-4o-mini"; 
 
 app.post("/api/chat", upload.single("image"), async (req, res) => {
   try {
@@ -50,16 +54,15 @@ app.post("/api/chat", upload.single("image"), async (req, res) => {
     }
     messages.push({ role: "user", content: userContent });
 
-    // اتصال مستقیم به 1xAi با fetch
     console.log("Sending request to 1xAi...");
-    const response = await fetch("https://1xai.ir/v1/chat/completions", {
+    const response = await fetch(`${BASE_URL}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-5-mini",
+        model: MODEL,
         messages: messages,
         max_tokens: 2000,
       }),
@@ -68,7 +71,7 @@ app.post("/api/chat", upload.single("image"), async (req, res) => {
     if (!response.ok) {
       const errorData = await response.text();
       console.error("1xAi Error:", response.status, errorData);
-      throw new Error(`1xAi Error: ${response.status} - ${errorData}`);
+      throw new Error(`1xAi Error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -82,7 +85,7 @@ app.post("/api/chat", upload.single("image"), async (req, res) => {
     res.json({ reply, conversationId });
   } catch (err) {
     console.error("Chat error:", err.message);
-    res.status(500).json({ error: err.message || "AI request failed." });
+    res.status(500).json({ error: "AI request failed." });
   }
 });
 
